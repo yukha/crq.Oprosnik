@@ -1,11 +1,10 @@
 package com.crq.oprosnik;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.annotation.SuppressLint;
 import android.provider.Settings.Secure;
 import android.os.Bundle;
 import android.webkit.CookieManager;
-import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -18,17 +17,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView = (WebView) findViewById(R.id.webView);
+        webView = findViewById(R.id.webView);
 
         setupWebView();
 
-        String android_id = Secure.getString( getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+        @SuppressLint("HardwareIds") String android_id = Secure.getString( getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         webView.loadUrl("http://crq.azurewebsites.net/?" + android_id);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void setupWebView() {
-
-
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setCacheMode(android.webkit.WebSettings.LOAD_NO_CACHE);
@@ -49,23 +47,13 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-//        webView.setWebChromeClient(new WebChromeClient() {
-//            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-//                callback.invoke(origin, true, false);
-//            }
-//        });
+
         CookieManager cookieMgr = CookieManager.getInstance();
         cookieMgr.setAcceptCookie(true);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            cookieMgr.setAcceptThirdPartyCookies(webView, true);
-        }
+        cookieMgr.setAcceptThirdPartyCookies(webView, true);
 
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-        } else {
-            CookieManager.getInstance().setAcceptCookie(true);
-        }
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
     }
 
     @Override
@@ -74,8 +62,7 @@ public class MainActivity extends AppCompatActivity {
             webView.goBack();
         }
         else {
-            // Your exit alert code, or alternatively line below to finish
-            super.onBackPressed(); // finishes activity
+            super.onBackPressed();
         }
     }
 }
