@@ -1,10 +1,13 @@
 package com.crq.oprosnik;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.annotation.SuppressLint;
-import android.provider.Settings.Secure;
+import android.net.http.SslError;
 import android.os.Bundle;
-import android.webkit.CookieManager;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,53 +19,47 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         webView = findViewById(R.id.webView);
+        webView.setWebViewClient(new SSLTolerantWebViewClient());
 
         setupWebView();
 
-        @SuppressLint("HardwareIds") String android_id = Secure.getString( getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-        webView.loadUrl("http://crq.azurewebsites.net/?" + android_id);
+        webView.loadUrl("http://cloudsurvey.survstat.ru/?p=lgstr3998d44f&mode=1");
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private void setupWebView() {
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setCacheMode(android.webkit.WebSettings.LOAD_NO_CACHE);
-        webView.getSettings().setDefaultTextEncodingName("UTF-8");
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setAppCacheEnabled(true);
-        webView.getSettings().setGeolocationDatabasePath(this.getFilesDir().getPath());
-        webView.getSettings().setDatabaseEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
+        WebSettings settings = webView.getSettings();
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(false);
+        settings.setCacheMode(android.webkit.WebSettings.LOAD_NO_CACHE);
+        settings.setDefaultTextEncodingName("UTF-8");
+        settings.setJavaScriptEnabled(true);
 
-        webView.setWebViewClient(new WebViewClient(){
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
-                view.loadUrl(url);
+        //settings.setAppCacheEnabled(true);
+        //settings.setGeolocationDatabasePath(this.getFilesDir().getPath());
+//        settings.setDatabaseEnabled(true);
+        settings.setDomStorageEnabled(true);
+//        settings.setAllowFileAccess(true);
+        settings.setUseWideViewPort(true);
+//        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setLoadWithOverviewMode(true);
+
+        webView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                view.loadUrl(request.getUrl().toString());
                 return false;
             }
         });
-
-        CookieManager cookieMgr = CookieManager.getInstance();
-        cookieMgr.setAcceptCookie(true);
-
-        cookieMgr.setAcceptThirdPartyCookies(webView, true);
-
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
     }
+    private static class SSLTolerantWebViewClient extends WebViewClient {
 
-    @Override
-    public void onBackPressed() {
-        if (webView.copyBackForwardList().getCurrentIndex() > 0) {
-            webView.goBack();
-        }
-        else {
-            super.onBackPressed();
+        @Override
+        public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+            handler.proceed(); // Ignore SSL certificate errors
+            super.onReceivedSslError(view, handler, error);
+
         }
     }
 }
+
