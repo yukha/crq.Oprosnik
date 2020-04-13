@@ -3,8 +3,9 @@
     package="com.crq.oprosnik">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-<!--    <uses-permission android:name="ru.evotor.permission.PAYMENT_SYSTEM" />-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="ru.evotor.permission.BINARY_NETWORK" />
+    <uses-permission android:name="ru.evotor.pushnotifications.PUSH_RECEIVE" />
 
     <application
         android:allowBackup="true"
@@ -19,21 +20,25 @@
             android:name="app_uuid"
             android:value="e9aaf4a2-e0da-4b04-b87a-a2b79809f944" />
 
-        <activity android:name=".MainActivity">
+        <receiver
+            android:name=".PushReceiver"
+            android:permission="ru.evotor.pushnotifications.PUSH_SENDER">
+            <intent-filter>
+                <action android:name="ru.evotor.pushnotifications.PUSH_RECEIVED_EVENT" />
+            </intent-filter>
+        </receiver>
 
+        <activity android:name=".MainActivity">
             <meta-data
                 android:name="ru.evotor.launcher.BACKGROUND_COLOR"
-                android:value="#133788" />
+                android:value="#6200EE" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.EVOTOR" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-<!--            <intent-filter>-->
-<!--                <category android:name="android.intent.category.EVOTOR" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
         </activity>
     </application>
 

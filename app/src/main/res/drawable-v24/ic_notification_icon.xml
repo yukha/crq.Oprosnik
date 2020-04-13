@@ -8,6 +8,9 @@
     <path
         android:fillColor="#6200ee"
         android:pathData="M -1 -1 H 193 V 193 H -1 V -1 Z" />
+<!--    <path-->
+<!--        android:fillColor="url(#gridpattern)"-->
+<!--        android:pathData="M 0 0 H 100 V 100 H 0 V 0 Z" />-->
     <path
         android:fillColor="#fff"
         android:strokeColor="#fff"
