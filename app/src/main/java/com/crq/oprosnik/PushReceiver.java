@@ -20,31 +20,31 @@ public class PushReceiver extends PushNotificationReceiver {
     @Override
     public void onReceivePushNotification(Context context, Bundle data, long messageId) {
 
+        String title = data.getString("title", "Внимание новый опрос");
+        String text = data.getString("text","Пожалуйста, выполните опросник");
+        int priority = data.getInt("priority", 2);
+
         Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */,
+                intent, PendingIntent.FLAG_ONE_SHOT);
 
 
 
         String channelId = context.getString(R.string.default_notification_channel_id);
-        // Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, channelId)
-                        .setSmallIcon(R.drawable.ic_stat_check_circle_outline)
-                        .setContentTitle("Текст заголовка")
-                        .setContentText("Новый опрос, короны и вирусы!")
+                        .setSmallIcon(R.drawable.ic_stat_bullhorn)
+                        .setContentTitle(title)
+                        .setContentText(text)
                         .setAutoCancel(true)
-                        // .setSound(defaultSoundUri)
+                        .setSound(defaultSoundUri)
+                        .setPriority(priority)
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if(notificationManager == null)
-        {
-            Toast.makeText(context, "NotificationManager is null", Toast.LENGTH_SHORT).show();
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationBuilder.setChannelId("com.crq.oprosnik");
@@ -60,14 +60,7 @@ public class PushReceiver extends PushNotificationReceiver {
                 notificationManager.createNotificationChannel(channel);
             }
         }
-
         Notification n = notificationBuilder.build();
-
-        // Toast.makeText(context,"до этого места работает",      Toast.LENGTH_SHORT).show();
-        try {
-            notificationManager.notify(0, n);
-        } catch (Exception e) {
-            Toast.makeText(context,e.getMessage(),      Toast.LENGTH_SHORT).show();
-        }
+        notificationManager.notify(0, n);
     }
 }

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -30,6 +31,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         webView = findViewById(R.id.webView);
 
-        // webView.setWebContentsDebuggingEnabled(true);
 
         webView.clearCache(true);
         webView.clearHistory();
@@ -68,16 +69,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         @SuppressLint("HardwareIds") String android_id = Secure.getString( getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-        // webView.loadUrl("https://kassa.norana.ru/survey/get?deviceId=" + android_id);
 
-        webView.loadUrl("https://default.norana.ru/?deviceId=" + android_id);
+        url = "https://kassa.norana.ru/survey/get?deviceId=" + android_id;
+        // url = "https://default.norana.ru/?deviceId=" + android_id;
+
+        webView.loadUrl(url);
 
         if (!isConnected(MainActivity.this)) {
-            Toast.makeText(MainActivity.this, "Offline ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Нет соединения с интернетом", Toast.LENGTH_SHORT).show();
+            webView.loadUrl("file:///android_asset/html/offline.html");
+            webView.addJavascriptInterface(this, "app");
         }
-
-        notification();
     }
+
+    @JavascriptInterface
+    public String getUrl(){
+        return url;
+    }
+
 
     @SuppressLint("SetJavaScriptEnabled")
     private void setupWebView() {
@@ -100,59 +109,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
 
-    }
-
-    private void notification(){
-        Context context = getApplicationContext();
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-
-
-        String channelId = context.getString(R.string.default_notification_channel_id);
-        // Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context, channelId)
-                        .setSmallIcon(R.drawable.ic_stat_check_circle_outline)
-                        .setContentTitle("Текст заголовка")
-                        .setContentText("Новый опрос, короны и вирусы!")
-                        .setAutoCancel(true)
-                        // .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if(notificationManager == null)
-        {
-            Toast.makeText(context, "NotificationManager is null", Toast.LENGTH_SHORT).show();
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationBuilder.setChannelId("com.crq.oprosnik");
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    "com.crq.oprosnik",
-                    "Oprosnik",
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-        Notification n = notificationBuilder.build();
-
-        // Toast.makeText(context,"до этого места работает",      Toast.LENGTH_SHORT).show();
-        try {
-            notificationManager.notify(0, n);
-        } catch (Exception e) {
-            Toast.makeText(context,e.getMessage(),      Toast.LENGTH_SHORT).show();
-        }
     }
 
     public static boolean isConnected(Context context) {
