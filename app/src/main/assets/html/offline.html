@@ -8,31 +8,32 @@
     <link rel="stylesheet" href="css/site.css" />
 </head>
 <body>
-<div class="container">
-    <main role="main" class="pb-3">
-        <div class="text-center">
-            <h3 class="display-4">Нет соедининия с интернетом</h3>
-        </div>
 
-        <div class="media">
-            <img class="mr-3" src="kroko.png" alt="">
-            <div class="media-body">
-                <p>Подключитесь к Wi-Fi и попробуйте еще раз.</p>
+    <div class="container h-100">
+        <div class="row align-items-center justify-content-center h-100">
+            <div class="text-center col-12">
+                &nbsp;
+            </div>
+            <div class="col-11 justify-content-center text-center">
+                <img src="offline.png" alt="">
+
+                <h4 class="mt-4">Нет соедининия с интернетом</h4>
+
+                <p class="mt-3 mb-4">Подключитесь к сети Wi-Fi и попробуйте еще раз.</p>
+
+                <button class="btn btn-success btn-lg"
+                        onclick="window.location = app.getUrl()">Перегрузить</button>
+
+            </div>
+
+            <div class="text-center col-12">
+                <footer class="footer text-muted center">
+                    <p><small>&copy; 2020 - oпросник</small></p>
+                </footer>
             </div>
         </div>
-        <div class="container clearfix">
-            <button class="btn btn-success btn-lg float-right"
-               onclick="window.location = app.getUrl()">Перегрузить</button>
-
-        </div>
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2020 - oпросник
     </div>
-</footer>
+
 <script src="lib/jquery/dist/jquery.min.js"></script>
 <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
