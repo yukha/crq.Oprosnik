@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.widget.Toast;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import java.net.HttpURLConnection;
@@ -28,12 +30,18 @@ public class PushReceiver extends PushNotificationReceiver {
 
         String title = data.getString("title", "Внимание новый опрос");
         String text = data.getString("text","Пожалуйста, выполните опросник");
-        int priority = data.getInt("priority", 2);
+        String priority = data.getString("priority", "");
         String pushId = data.getString("pushId","");
 
-        if(priority > 2) priority = 2;
-        if(priority > -2) {
-
+        if(priority != "") {
+            int iPriority;
+            try {
+                iPriority = Integer.parseInt(priority);
+            }
+            catch (NumberFormatException e)
+            {
+                iPriority = 2;
+            }
             Intent intent = new Intent(context, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */,
@@ -49,7 +57,7 @@ public class PushReceiver extends PushNotificationReceiver {
                             .setContentText(text)
                             .setAutoCancel(true)
                             .setSound(defaultSoundUri)
-                            .setPriority(priority)
+                            .setPriority(iPriority)
                             .setContentIntent(pendingIntent);
 
             NotificationManager notificationManager =
@@ -90,7 +98,7 @@ public class PushReceiver extends PushNotificationReceiver {
             urlConnection.getResponseCode();
         }
         catch(Exception e) {
-
+            Toast.makeText(context,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
     }
